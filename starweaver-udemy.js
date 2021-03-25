@@ -21,6 +21,19 @@ const puppeteer = require("puppeteer");
     ".individual-review--individual-review-content--en4c7"
   );
 
+  let selectorForLoadMoreButton =
+    ".reviews-section--reviews-show-more--2cJQg button";
+
+  let loadMoreVisible = await isElementVisible(page, selectorForLoadMoreButton);
+  while (loadMoreVisible) {
+    await page.click(selectorForLoadMoreButton).catch(() => {});
+    loadMoreVisible = await isElementVisible(page, selectorForLoadMoreButton);
+  }
+
+  console.log("Showing all reviews");
+
+  //await page.click(".reviews-section--reviews-show-more--2cJQg button");
+
   const reviews = await page.evaluate(() =>
     Array.from(
       document.querySelectorAll(
@@ -54,9 +67,19 @@ const puppeteer = require("puppeteer");
   );
   console.log(reviews);
 
-  await browser.close();
+  //await browser.close();
   //mongoose.connection.close();
 })();
+
+const isElementVisible = async (page, cssSelector) => {
+  let visible = true;
+  await page
+    .waitForSelector(cssSelector, { visible: true, timeout: 2000 })
+    .catch(() => {
+      visible = false;
+    });
+  return visible;
+};
 
 /* 
 .individual-review--individual-review--1AJi4
